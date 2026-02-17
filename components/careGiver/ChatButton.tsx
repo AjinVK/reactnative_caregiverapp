@@ -23,7 +23,7 @@ export default function ChatButton({ patientId }: Props) {
 
     return (
         <Pressable
-            className="absolute right-4 w-[56px] h-[56px] rounded-full items-center justify-center bg-[#2873B5] active:opacity-90"
+            className="absolute right-4 w-[56px] h-[56px] rounded-full items-center justify-center bg-[#1E5B91] active:opacity-90"
             style={{
                 bottom: insets.bottom + 16, elevation: 2
             }}

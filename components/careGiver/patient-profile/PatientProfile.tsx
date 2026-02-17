@@ -119,18 +119,31 @@ export default function PatientProfile() {
         setLoading(true);
     };
     const generalInfoData = [
-        { label: "Date of birth", value: patientData?.date_of_birth ?? "--" },
+        // { label: "Date of birth", value: patientData?.date_of_birth ?? "--" },
+        { label: "Date of birth", value: patientData?.date_of_birth ? new Date(patientData.date_of_birth).toLocaleDateString() : "--" },
         { label: "Gender", value: patientData?.gender ?? "--" },
         { label: "Age", value: patientData?.age?.toString() ?? "--" },
         { label: "Location", value: patientData?.address ?? "--" },
         { label: "Registration date", value: patientData?.createdAt ? new Date(patientData.createdAt).toLocaleDateString() : "--" },
     ];
 
-    const formatNames = (data?: { name: string } | { name: string }[]) => {
+    // const formatNames = (data?: { name: string } | { name: string }[]) => {
+    //     if (!data) return "--";
+    //     if (Array.isArray(data)) {
+    //         return data.map(d => d.name).join(", ");
+    //     }
+    //     return data.name;
+    // };
+
+    const formatNames = (
+        data?: string | { name: string } | { name: string }[]
+    ) => {
         if (!data) return "--";
-        if (Array.isArray(data)) {
-            return data.map(d => d.name).join(", ");
-        }
+
+        if (typeof data === "string") return data;
+
+        if (Array.isArray(data)) return data.map(d => d.name).join(", ");
+
         return data.name;
     };
 

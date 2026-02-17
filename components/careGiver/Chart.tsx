@@ -9,7 +9,7 @@ export default function Chart({ monthlyData }: { monthlyData?: number[] }) {
     const currentMonthIndex = now.getMonth();
 
     const lineData = MONTHS.map((month, i) => {
-        const value = monthlyData?.[i] ?? Math.floor(Math.random() * 100);
+        const value = monthlyData?.[i] ?? 0;
 
         if (i > currentMonthIndex) {
             return {

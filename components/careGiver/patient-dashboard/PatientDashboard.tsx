@@ -8,6 +8,7 @@ import ChatButton from "../ChatButton";
 import PatientDashboardHeader from "./Header";
 import HealthDetails from "./HealthDetails";
 import PatientHealthInfo, { SelectedItem } from "./PatientHealthInfo";
+import { ActivityIndicator } from "react-native";
 
 export default function PatientDashboard() {
     const params = useLocalSearchParams();
@@ -46,12 +47,9 @@ export default function PatientDashboard() {
                                     endDate: m.endDate || null,
                                 }));
                             }
-                        } catch (e) {
-                            // details is just a plain string (legacy notes)
-                        }
+                        } catch (e) { }
                     }
 
-                    // Fallback to present_medication if no detailed meds found in details
                     if (meds.length === 0 && patient.present_medication) {
                         if (typeof patient.present_medication === 'object' && 'name' in patient.present_medication) {
                             meds = [{
@@ -82,7 +80,7 @@ export default function PatientDashboard() {
     }, [id]);
 
     const sections = [
-        { key: "header", component: <PatientDashboardHeader patient={patientData} /> },
+        // { key: "header", component: <PatientDashboardHeader patient={patientData} /> },
         { key: "chart", component: <Chart /> },
         { key: "healthDetails", component: <HealthDetails /> },
         {
@@ -101,11 +99,18 @@ export default function PatientDashboard() {
         <>
             <StatusBar translucent barStyle="dark-content" />
             <SafeAreaView className="h-full bg-[white]">
-                <FlatList
-                    data={sections}
-                    keyExtractor={(item) => item.key}
-                    renderItem={({ item }) => <View>{item.component}</View>}
-                    showsVerticalScrollIndicator={false} />
+                <PatientDashboardHeader patient={patientData} />
+                {loading ? (
+                    <View className="flex-1 items-center justify-center">
+                        <ActivityIndicator size="large" color="#1E5B91" />
+                    </View>
+                ) : (
+                    <FlatList
+                        data={sections}
+                        keyExtractor={(item) => item.key}
+                        renderItem={({ item }) => <View>{item.component}</View>}
+                        showsVerticalScrollIndicator={false} />
+                )}
 
                 {patientData?._id && (<ChatButton patientId={String(patientData._id)} />)}
             </SafeAreaView>
