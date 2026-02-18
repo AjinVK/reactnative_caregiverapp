@@ -57,7 +57,7 @@ export const FormTextInput: React.FC<Props> = ({
                         )}
                     </View>
 
-                    <Text className="text-[11px] text-red-500 mt-[3px]">
+                    <Text className="text-[10px] text-red-500 mt-[3px]">
                         {error?.message ?? " "}
                     </Text>
                 </View>

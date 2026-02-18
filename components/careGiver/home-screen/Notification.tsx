@@ -5,21 +5,21 @@ export default function Notification() {
     return (
         <View className="px-4">
             <View
-                className="w-full h-[168] bg-[#fff] rounded-xl mb-[20px]  justify-center overflow-hidden"
+                className="w-full bg-[#fff] rounded-xl mb-[20px] justify-center overflow-hidden"
                 style={{ elevation: 4 }}
             >
                 <View className="flex-row items-center justify-between">
-                    <View className="flex-1 ml-[21px]">
+                    <View className="flex-1 ml-5">
                         <Text className="text-[18px] font-bold text-[##032D6F] mb-1.5">
                             Get the best medical services
                         </Text>
 
-                        <Text className="text-[10px] font-semibold text-[##72A7DF] mb-[21px]">
+                        <Text className="text-[10px] font-semibold text-[##72A7DF] mb-5">
                             We provide best quality medical service without further cost
                         </Text>
 
                         <Pressable
-                            className="w-[75px] h-[24px] bg-[#ffffff] rounded-lg flex-row items-center justify-center active:opacity-70"
+                            className="w-[75px] py-1.5 rounded-lg items-center active:opacity-70 bg-white"
                             style={{ elevation: 2 }}
                         >
                             <Text className="text-[11px] font-normal">Read more</Text>

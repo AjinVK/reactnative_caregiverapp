@@ -117,7 +117,6 @@ const LoginScreen = () => {
                                     letterSpacing: 2,
                                     color: "#000",
                                 }}
-                                // autoCapitalize=""
                             />
 
                             <FloatingInput
@@ -132,7 +131,7 @@ const LoginScreen = () => {
                                     color: "#000",
                                 }}
                             />
-                            <View className="flex-row gap-[160px] -mt-[15px] mb-[28px]">
+                            <View className="w-full items-start flex-row justify-between -mt-4 mb-7">
                                 <View className="flex-row">
                                     <TouchableOpacity onPress={() => setRemember(!remember)}>
                                         <View
@@ -145,11 +144,9 @@ const LoginScreen = () => {
                                                 <Feather name="check" size={12} color="#000000ff" />
                                             )}
                                         </View>
-
                                     </TouchableOpacity>
                                     <Text className="text-[10px] font-semibold tracking-wide">Remember me</Text>
                                 </View>
-
                                 <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password/ForgotPassword")}>
                                     <Text className="text-[10px] font-semibold tracking-wide">Forgot password?</Text>
                                 </TouchableOpacity>
@@ -187,17 +184,17 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginBottom: 15,
     },
-    floatingLabel: {
-        position: "absolute",
-        left: 0,
-        fontSize: 16,
-        color: "#444",
-    },
-    rightIcon: {
-        position: "absolute",
-        right: 0,
-        bottom: 6,
-    },
+    // floatingLabel: {
+    //     position: "absolute",
+    //     left: 0,
+    //     fontSize: 16,
+    //     color: "#444",
+    // },
+    // rightIcon: {
+    //     position: "absolute",
+    //     right: 0,
+    //     bottom: 6,
+    // },
     checkbox: {
         width: 13,
         height: 12,
@@ -209,7 +206,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginRight: 3,
     },
-
     checkedBox: {
         backgroundColor: "#ffffffff",
         borderColor: "#ffffffff",

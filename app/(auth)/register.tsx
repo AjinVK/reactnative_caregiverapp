@@ -136,7 +136,7 @@ const SignUpScreen = () => {
                                 secureTextEntry
                             />
 
-                            <View className="flex-row items-center -mt-[15px] mb-[18px]">
+                            <View className="flex-row items-center -mt-4 mb-[18px]">
                                 <TouchableOpacity onPress={() => setAgree(!agree)}>
                                     <View
                                         style={[
@@ -183,8 +183,8 @@ export default SignUpScreen;
 
 const styles = StyleSheet.create({
     checkbox: {
-        width: 17,
-        height: 16,
+        width: 15,
+        height: 14,
         borderWidth: 0.4,
         borderColor: "#888888",
         backgroundColor: "#fff",

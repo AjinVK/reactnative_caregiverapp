@@ -1,11 +1,5 @@
 import { Control, Controller, useWatch } from "react-hook-form";
-import {
-    Animated,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-} from "react-native";
+import { Animated, StyleSheet, Text, TextInput, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 type FloatingInputProps = {
