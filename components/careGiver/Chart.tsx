@@ -1,4 +1,5 @@
 import { ThemedView } from "@/components/themed-view";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 
@@ -7,32 +8,35 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 export default function Chart({ monthlyData }: { monthlyData?: number[] }) {
     const now = new Date();
     const currentMonthIndex = now.getMonth();
+    const [selectedPoint, setSelectedPoint] = useState<{
+        value: number;
+        label: string;
+    } | null>(null);
 
     const lineData = MONTHS.map((month, i) => {
-        const value = monthlyData?.[i] ?? 0;
-
-        if (i > currentMonthIndex) {
-            return {
-                value: undefined,
-                label: month,
-            };
-        }
+        let value = 0;
+        if (i > currentMonthIndex) value = 0;
+        else if (i === currentMonthIndex) value = monthlyData?.[i] ?? 0;
+        else value = monthlyData?.[i] ?? 0;
+        // const isFuture = i > currentMonthIndex;
 
         return {
+            // value: isFuture ? undefined : monthlyData?.[i] ?? 0,
             value,
             label: month,
-            customDataPoint: i === currentMonthIndex
-                ? () => (
-                    <View
-                        style={{
-                            width: 9,
-                            height: 9,
-                            borderRadius: 10,
-                            backgroundColor: "#FF3B3B",
-                        }}
-                    />
-                )
-                : undefined,
+            customDataPoint:
+                i === currentMonthIndex
+                    ? () => (
+                        <View
+                            style={{
+                                width: 9,
+                                height: 9,
+                                borderRadius: 10,
+                                backgroundColor: "#FF3B3B",
+                            }}
+                        />
+                    )
+                    : undefined,
             dataPointText: i === currentMonthIndex ? `${value}` : undefined,
         };
     });
@@ -66,6 +70,23 @@ export default function Chart({ monthlyData }: { monthlyData?: number[] }) {
                         maxValue={100}
                         yAxisThickness={1}
                         xAxisThickness={1}
+                        focusEnabled
+                        showDataPointOnFocus
+                        onFocus={(item: any) => {
+                            setSelectedPoint({
+                                value: item.value,
+                                label: item.label,
+                            });
+                        }}
+                        // dataPointLabelComponent={(item: any) => {
+                        //     if (item.value == null) return null;
+
+                        //     return (
+                        //         <Text style={{ color: "#FF3B3B", fontSize: 10, fontWeight: "600" }}>
+                        //             {item.value}
+                        //         </Text>
+                        //     );
+                        // }}
                         color="#FF3B3B"
                         yAxisColor="#E5E7EB"
                         xAxisColor="#E5E7EB"
@@ -78,8 +99,6 @@ export default function Chart({ monthlyData }: { monthlyData?: number[] }) {
                         yAxisTextStyle={{ color: '#6B7280', fontSize: 12 }}
                         initialSpacing={20}
                         endSpacing={20}
-                        showDataPointOnFocus={true}
-                        focusEnabled={true}
                         startFillColor="#FF3B3B"
                         endFillColor="#FF3B3B"
                         startOpacity={0.25}
