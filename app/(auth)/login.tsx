@@ -33,7 +33,32 @@ const LoginScreen = () => {
             if (response?.statusCode == apiResponseMessages.apiStatuscode.success) {
 
                 const token = response?.data?.token;
-                // const user = response?.data?.user;
+                const userId = response.data.user.user_id || response.data.user._id;
+                let userRole = response.data.user.role || response.data.user.user_role || response.data.user.userRole;
+
+                // Fallback for current "Caregiver" user if role is missing in DB
+                if (!userRole && response.data.user.first_name.toLowerCase().includes('caregiver')) {
+                    userRole = 'caregiver';
+                }
+
+                console.log("User ID:", userId);
+                console.log("User Role:", userRole);
+
+                // Role Validation for Caregiver Login Screen
+                if (userRole !== "caregiver") {
+                    Toast.show({
+                        type: apiResponseMessages.tostTypes.error,
+                        text1: "Invalid caregiver credentials",
+                        position: "top",
+                    });
+                    return;
+                }
+
+                if (userId) {
+                    await AsyncStorage.setItem("user_id", userId);
+                }
+
+                await AsyncStorage.setItem("user_role", "caregiver");
 
                 if (token) {
                     await AsyncStorage.setItem("token", token);
@@ -41,13 +66,6 @@ const LoginScreen = () => {
                 } else {
                     console.warn("⚠️ No token found in response — skipping save");
                 }
-
-                // if (user?._id) {
-                //   await AsyncStorage.setItem("userId", user._id.toString());
-                //   console.log("👤 User ID stored successfully:", user._id);
-                // } else {
-                //   console.warn("⚠️ No user ID found in response — skipping save");
-                // }
                 Toast.show({
                     type: apiResponseMessages.tostTypes.sucess,
                     text1: response.message,
@@ -57,26 +75,37 @@ const LoginScreen = () => {
                 reset();
             }
             else {
-                Toast.show({
-                    type: apiResponseMessages.tostTypes.error,
-                    text1: response.message,
-                    position: "top",
-                });
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-            } else {
-                console.log("Unknown error:", JSON.stringify(error, null, 2));
-            }
-            console.error("Registration Error:", error);
-            console.log("🧭 Error message:", (error as Error).message);
-            console.log("🛠️ Full error object:", JSON.stringify(error, null, 2));
-            Toast.show({
-                type: apiResponseMessages.tostTypes.error,
-                text1: (error as Error).message,
-                position: "top",
-            });
+        let errorMsg = response.message;
+        if (typeof errorMsg === 'object' && errorMsg !== null) {
+          errorMsg = errorMsg.message || "Login failed";
         }
+        Toast.show({
+          type: apiResponseMessages.tostTypes.error,
+          text1: typeof errorMsg === 'string' ? errorMsg : "Login failed",
+          position: "top",
+        });
+      }
+    } catch (error) {
+      let displayMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        displayMessage = error.message;
+        try {
+          const match = displayMessage.match(/Message: (.*)/);
+          if (match && match[1]) {
+            const parsed = JSON.parse(match[1]);
+            displayMessage = parsed.message || parsed.error || displayMessage;
+          }
+        } catch (e) { }
+        console.log("Error:", displayMessage);
+      } else {
+        console.log("Unknown error:", JSON.stringify(error, null, 2));
+      }
+      Toast.show({
+        type: apiResponseMessages.tostTypes.error,
+        text1: displayMessage,
+        position: "top",
+      });
+    }
     };
 
     return (

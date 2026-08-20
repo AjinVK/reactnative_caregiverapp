@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Animated, Dimensions, Keyboard, Platform, Pressable, Text, View } from "react-native";
+import { Animated, Dimensions, Keyboard, Modal, Platform, Pressable, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -32,6 +32,7 @@ export default function PatientForm() {
     const [dob, setDob] = useState<Date | null>(null);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+    const [tempDate, setTempDate] = useState<Date>(new Date());
     const [dateError, setDateError] = useState<string | null>(null);
     const [containerWidth, setContainerWidth] = useState(0);
     const { width } = Dimensions.get("window");
@@ -63,10 +64,19 @@ export default function PatientForm() {
     };
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
-        setShowPicker({ visible: false });
+        if (Platform.OS === "android") {
+            setShowPicker({ visible: false });
+            if (event.type !== "set" || !selectedDate) return;
+            updateSelectedDate(selectedDate);
+        } else {
+            // iOS: update temp date as user scrolls
+            if (selectedDate) {
+                setTempDate(selectedDate);
+            }
+        }
+    };
 
-        if (event.type !== "set" || !selectedDate) return;
-
+    const updateSelectedDate = (selectedDate: Date) => {
         if (focusedInput === "dob") {
             setDob(selectedDate);
 
@@ -93,7 +103,11 @@ export default function PatientForm() {
             setEndDate(selectedDate);
             setDateError(null);
         }
+    };
 
+    const confirmIOSDate = () => {
+        updateSelectedDate(tempDate);
+        setShowPicker({ visible: false });
     };
 
     {/* Blood Group */ }
@@ -202,10 +216,16 @@ export default function PatientForm() {
                     medications: formData.presentMedication
                 }),
             };
+console.log("SELECTED MEDICINES BEFORE API =>", formData.presentMedication);
+console.log("FULL CREATE PATIENT PAYLOAD =>", JSON.stringify(payload, null, 2));
 
             const response = await PatientFormService.createPatient(payload);
+            console.log("CREATE PATIENT RESPONSE =>", JSON.stringify(response, null, 2));
 
             if (response.success) {
+                if (response.data && (response.data as any).history) {
+                    console.log("✅ Patient History created successfully:", (response.data as any).history);
+                }
                 Toast.show({ type: apiResponseMessages.tostTypes.sucess, text1: response.message, position: "top", });
                 router.back();
             } else {
@@ -226,7 +246,7 @@ export default function PatientForm() {
                 <View className="flex-row items-center px-4 mb-[15px]">
                     <Pressable onPress={handleBack}
                         className="w-[33px] h-[33px] bg-[#F2F2F2] items-center justify-center rounded-full active:opacity-70">
-                        <IconSymbol name={"arrow-left.fill"} color={""} />
+                        <IconSymbol name={"arrow-left.fill"} color={"black"} />
                     </Pressable>
                     <Text className="text-[20px] font-semibold ml-[90px]">Patient’s form</Text>
                 </View>
@@ -240,7 +260,7 @@ export default function PatientForm() {
                         }}
                     >
                         <View className="items-center">
-                            <View className="w-[216px] bg-white rounded-full flex-row mt-[35px] mb-[4]">
+                            <View className="w-[216px] bg-white rounded-full flex-row mt-[35px]">
                                 <Pressable
                                     onPress={() => goToStep("patient")}
                                     className={`w-[108px] h-[38px] items-center justify-center rounded-full active:opacity-70 ${activeTab === "patient" ? "bg-[#1E5B91]" : "bg-white"
@@ -289,7 +309,7 @@ export default function PatientForm() {
                                     contentContainerStyle={{ paddingBottom: 100 }}
                                 >
                                     {/* <View> */}
-                                    <Text className="text-[20px] font-semibold text-center mt-[30px] mb-[1px]">
+                                    <Text className="text-[20px] font-semibold text-center mt-6 mb-[1px]">
                                         Patient’s personal info
                                     </Text>
                                     <Text className="text-[11px] font-medium text-[#908383] mb-[23px] text-center">
@@ -328,6 +348,7 @@ export default function PatientForm() {
                                                     focusedInput={focusedInput}
                                                     onPress={() => {
                                                         setFocusedInput("dob");
+                                                        setTempDate(dob || new Date());
                                                         setShowPicker({ visible: true });
                                                     }}
                                                 />
@@ -437,7 +458,7 @@ export default function PatientForm() {
                                     contentContainerStyle={{ paddingBottom: 80 }}
                                 >
                                     <Pressable onPress={() => { Keyboard.dismiss(); setFocusedInput(null); }}>
-                                        <Text className="text-[20px] font-semibold text-center mt-[30px] mb-[1px]">
+                                        <Text className="text-[20px] font-semibold text-center mt-6 mb-[1px]">
                                             Patient’s medication info
                                         </Text>
                                         <Text className="text-[11px] font-medium text-[#908383] mb-[23px] text-center">
@@ -457,7 +478,7 @@ export default function PatientForm() {
                                                                 isRequired={false}
                                                                 placeholder="Height (cm)"
                                                                 keyboardType="numeric"
-                                                                icon={""}
+
                                                                 value={value}
                                                                 onChangeText={onChange}
                                                                 onBlur={onBlur}
@@ -480,7 +501,7 @@ export default function PatientForm() {
                                                                 isRequired={false}
                                                                 placeholder="Weight (kg)"
                                                                 keyboardType="numeric"
-                                                                icon={""}
+
                                                                 value={value}
                                                                 onChangeText={onChange}
                                                                 onBlur={onBlur}
@@ -596,6 +617,7 @@ export default function PatientForm() {
                                                         focusedInput={focusedInput}
                                                         onPress={() => {
                                                             setFocusedInput("startDate");
+                                                            setTempDate(startDate || new Date());
                                                             setShowPicker({ visible: true });
                                                         }}
                                                     />
@@ -610,6 +632,7 @@ export default function PatientForm() {
                                                         focusedInput={focusedInput}
                                                         onPress={() => {
                                                             setFocusedInput("endDate");
+                                                            setTempDate(endDate || new Date());
                                                             setShowPicker({ visible: true });
                                                         }}
                                                     />
@@ -658,19 +681,49 @@ export default function PatientForm() {
                         </Animated.View>
 
                         {showPicker.visible && (
-                            <DateTimePicker
-                                value={
-                                    focusedInput === "dob"
-                                        ? dob ?? new Date()
-                                        : focusedInput === "startDate"
-                                            ? startDate ?? new Date()
-                                            : endDate ?? new Date()
-                                }
-                                mode="date"
-                                maximumDate={focusedInput === "dob" ? new Date() : undefined}
-                                display={Platform.OS === "ios" ? "spinner" : "default"}
-                                onChange={handleDateChange}
-                            />
+                            Platform.OS === "ios" ? (
+                                <Modal
+                                    transparent={true}
+                                    animationType="slide"
+                                    visible={showPicker.visible}
+                                    onRequestClose={() => setShowPicker({ visible: false })}
+                                >
+                                    <View className="flex-1 justify-end bg-black/50">
+                                        <View className="bg-white rounded-t-[20px] p-5 pb-10">
+                                            <View className="flex-row justify-between items-center mb-4">
+                                                <Pressable onPress={() => setShowPicker({ visible: false })}>
+                                                    <Text className="text-[#1E5B91] text-[16px] font-medium">Cancel</Text>
+                                                </Pressable>
+                                                <Pressable onPress={confirmIOSDate}>
+                                                    <Text className="text-[#1E5B91] text-[16px] font-bold">Done</Text>
+                                                </Pressable>
+                                            </View>
+                                            <DateTimePicker
+                                                value={tempDate}
+                                                mode="date"
+                                                maximumDate={focusedInput === "dob" ? new Date() : undefined}
+                                                display="spinner"
+                                                onChange={handleDateChange}
+                                                textColor="black"
+                                            />
+                                        </View>
+                                    </View>
+                                </Modal>
+                            ) : (
+                                <DateTimePicker
+                                    value={
+                                        focusedInput === "dob"
+                                            ? dob ?? new Date()
+                                            : focusedInput === "startDate"
+                                                ? startDate ?? new Date()
+                                                : endDate ?? new Date()
+                                    }
+                                    mode="date"
+                                    maximumDate={focusedInput === "dob" ? new Date() : undefined}
+                                    display="default"
+                                    onChange={handleDateChange}
+                                />
+                            )
                         )}
                     </View>
                 </View>

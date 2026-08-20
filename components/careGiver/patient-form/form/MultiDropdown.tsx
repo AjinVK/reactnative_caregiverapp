@@ -137,9 +137,17 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
             startDate,
             endDate,
         };
+console.log("NEW MEDICINE ROW =>", updatedItem);
+console.log("OLD VALUES ARRAY =>", values);
 
         const exists = values.find(v => v.value === activeItem.value);
+const newMedicineArray = exists
+    ? values.map(v => v.value === activeItem.value ? updatedItem : v)
+    : [...values, updatedItem];
 
+console.log("FINAL TABLE ARRAY AFTER DONE =>", JSON.stringify(newMedicineArray, null, 2));
+
+onChange(newMedicineArray);
         onChange(
             exists
                 ? values.map(v =>
@@ -199,6 +207,10 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                 style={{
                     height: 43,
                     elevation: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
                     borderWidth: 1,
                     borderColor: error ? "#EF4444" : isFocused ? "#1E5B91" : "#E5E7EB",
                 }}
@@ -236,6 +248,10 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                             right: 0,
                             zIndex: 1000,
                             elevation: 8,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 8,
                         }}
                     >
                         <ScrollView
@@ -507,6 +523,10 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 15,
         elevation: 8,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
         alignItems: "center",
     },
     tableContainer: {

@@ -54,6 +54,10 @@ export default function FormInput({
             <View className={`flex-row items-center bg-[#fff] rounded-xl px-3`}
                 style={{
                     elevation: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
                     borderWidth: 1,
                     borderColor: error
                         ? "#EF4444"
@@ -128,7 +132,15 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
             <Pressable
                 onPress={onPress}
                 className={`flex-row h-[43px] items-center bg-[#fff] rounded-xl px-4`}
-                style={{ elevation: 3, borderWidth: 1, borderColor: error ? "#EF4444" : focused ? "#1E5B91" : "#E5E7EB", }}
+                style={{ 
+                    elevation: 3, 
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
+                    borderWidth: 1, 
+                    borderColor: error ? "#EF4444" : focused ? "#1E5B91" : "#E5E7EB", 
+                }}
             >
                 <View className="flex-row items-center justify-between flex-1">
                     <Text className={`ml-2 text-[15px] ${value ? "text-[#111]" : "text-[#999]"}`}>
@@ -337,6 +349,10 @@ export const FormTextArea: React.FC<FormInputProps> = ({
             <View className={`h-[125px] bg-[#fff] rounded-xl px-3`}
                 style={{
                     elevation: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
                     borderWidth: 1,
                     borderColor: error
                         ? "#EF4444"
@@ -439,6 +455,10 @@ export const CustomDropdownField: React.FC<DropdownFieldProps> = ({
                 style={{
                     height: 43,
                     elevation: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
                     borderWidth: 1,
                     borderColor: error
                         ? "#EF4444"
@@ -482,6 +502,10 @@ export const CustomDropdownField: React.FC<DropdownFieldProps> = ({
                             right: 24,
                             zIndex: 1000,
                             elevation: 10,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 5 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 10,
                         }}
                     >
                         <View className="bg-white rounded-xl border border-[#E5E7EB]">

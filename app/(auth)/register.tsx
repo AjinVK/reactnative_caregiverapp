@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import Toast from "react-native-toast-message";
 import {
     Image,
     Keyboard,
@@ -12,16 +13,16 @@ import {
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    useWindowDimensions,
     View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { registerSchema } from "../utils/validation";
-import FormTextInput from "@/components/form/InputForm";
-import Toast from "react-native-toast-message";
 import { BASE_URL } from "../api/apiEndPoints";
-import AuthService from "../service/authService";
 import apiResponseMessages from "../api/apiResponseMessages";
+import FormTextInput from "@/components/form/InputForm";
+import AuthService from "../service/authService";
 
 const SignUpScreen = () => {
     const [agree, setAgree] = useState(false);
@@ -58,18 +59,30 @@ const SignUpScreen = () => {
                 });
             }
         } catch (error) {
-
-            console.error("Registration Error:", error);
-            console.log("🧭 Error message:", (error as Error).message);
-            console.log("🛠️ Full error object:", JSON.stringify(error, null, 2));
-
-            Toast.show({
+              let displayMessage = "An unexpected error occurred";
+              if (error instanceof Error) {
+                displayMessage = error.message;
+                try {
+                  const match = displayMessage.match(/Message: (.*)/);
+                  if (match && match[1]) {
+                    const parsed = JSON.parse(match[1]);
+                    displayMessage = parsed.message || parsed.error || displayMessage;
+                  }
+                } catch (e) { }
+                console.log("Error:", displayMessage);
+              } else {
+                console.log("Unknown error:", JSON.stringify(error, null, 2));
+              }
+              Toast.show({
                 type: apiResponseMessages.tostTypes.error,
-                text1: (error as Error).message,
+                text1: displayMessage,
                 position: "top",
-            });
-        }
+              });
+            }
     };
+
+    const { width } = useWindowDimensions();
+    const imageSize = width * 0.55; // Responsive image size
 
     return (
         <SafeAreaView className="flex-1 bg-[white]">
@@ -79,25 +92,32 @@ const SignUpScreen = () => {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ flexGrow: 1 }}
-
-                // scrollEnabled={keyboardOpen}
                 >
-                    <View className="mt-[10px]">
-                        <Text className="text-[22px] font-semibold text-center px-[65px]">Let's begin your healthy journey with us</Text>
+                    <View className="flex-1 mt-[10px]">
+                        <Text className="text-[22px] font-semibold text-center px-10">Let's begin your healthy journey with us</Text>
 
-                        <View className="flex-row items-center justify-center">
+                        <View className="flex-row items-center justify-center my-4">
                             <Image
                                 source={require("@/assets/images/doctors.png")}
-                                className="w-[216px] h-[216px]"
+                                style={{ width: imageSize, height: imageSize }}
                                 resizeMode="contain"
                             />
                         </View>
 
                         <View
-                            className="h-full rounded-tr-[40px] rounded-tl-[40px] bg-[#CBDDFF] px-[40px]"
-                            style={{ elevation: 10 }}
+                            className="flex-1 rounded-tr-[40px] rounded-tl-[40px] bg-[#CBDDFF] px-8 pt-6 pb-6"
+                            style={{
+                                elevation: 10,
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 4,
+                                },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 6,
+                            }}
                         >
-                            <Text className="text-[22px] font-semibold text-center mt-[25px] mb-[25px]">Sign up</Text>
+                            <Text className="text-[26px] font-semibold text-center mb-[25px]">Sign up</Text>
 
                             <FormTextInput
                                 name="firstName"
@@ -136,7 +156,7 @@ const SignUpScreen = () => {
                                 secureTextEntry
                             />
 
-                            <View className="flex-row items-center -mt-4 mb-[18px]">
+                            <View className="flex-row items-center mt-1 mb-5">
                                 <TouchableOpacity onPress={() => setAgree(!agree)}>
                                     <View
                                         style={[
@@ -150,26 +170,26 @@ const SignUpScreen = () => {
                                     </View>
                                 </TouchableOpacity>
 
-                                <Text className="text-[9px] font-normal">
+                                <Text className="text-[11px] font-normal flex-1">
                                     I agree to the medilock Terms of Service and Privacy Policy
                                 </Text>
                             </View>
 
                             <Pressable
                                 onPress={handleSubmit(onSubmit)}
-                                className="w-full h-[40px] items-center justify-center rounded-[18px] bg-[#3979F2] active:opacity-70 mb-[10px]"
+                                className="w-full h-[45px] items-center justify-center rounded-[22px] bg-[#3979F2] active:opacity-70 mb-[15px]"
                             >
                                 <Text className="text-[16px] text-[white] font-semibold tracking-widest">Sign up</Text>
                             </Pressable>
 
                             <View className="flex-row justify-center">
-                                <Text className="text-[10px] font-normal">Go to</Text>
+                                <Text className="text-[12px] font-normal">Go to</Text>
                                 <Pressable
-                                    onPress={() => router.replace("/(auth)/login")}
+                                    onPress={() => router.back()}
                                     className="active:opacity-70">
-                                    <Text className="text-[10px] text-[#005EFF] font-normal"> login</Text>
+                                    <Text className="text-[12px] text-[#005EFF] font-normal"> login</Text>
                                 </Pressable>
-                                <Text className="text-[10px] font-normal"> page?</Text>
+                                <Text className="text-[12px] font-normal"> page?</Text>
                             </View>
                         </View>
                     </View>

@@ -172,6 +172,14 @@ import { Entypo } from "@expo/vector-icons";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import PatientHistoryService from "../service/patientHistoryService";
 
+interface Medication {
+    name: string;
+    dose: string;
+    days: number;
+    startDate: string;
+    endDate: string;
+}
+
 interface TimelineItem {
     id: string;
     date: string;
@@ -180,6 +188,7 @@ interface TimelineItem {
     doctor: string;
     desc: string;
     color: string;
+    medications: Medication[];
 }
 
 const PatientHistory = () => {
@@ -200,15 +209,48 @@ const PatientHistory = () => {
             console.log("API response:", response);
 
             if (response.success && response.data) {
-                const mappedData: TimelineItem[] = response.data.map((item: any) => ({
-                    id: item._id,
-                    date: new Date(item.createdAt).toLocaleDateString(),
-                    title: item.details || "Medical Record",
-                    hospital: item.address || "Unknown Hospital",
-                    doctor: item.caregiver_id?.name || "Assigned Doctor",
-                    desc: item.medical_conditions || "No description available",
-                    color: getColorByGender(item.gender),
-                }));
+                const mappedData: TimelineItem[] = response.data.map((item: any) => {
+                    let meds: Medication[] = [];
+
+                    if (item.details) {
+                        try {
+                            const parsed = JSON.parse(item.details);
+                            if (parsed.medications && Array.isArray(parsed.medications)) {
+                                meds = parsed.medications.map((m: any) => ({
+                                    name: m.label || m.name || "N/A",
+                                    dose: m.dose || "N/A",
+                                    days: m.days || 0,
+                                    startDate: m.startDate || "N/A",
+                                    endDate: m.endDate || "N/A",
+                                }));
+                            }
+                        } catch (e) {
+                            // If parsing fails, details might be just a string, not JSON
+                        }
+                    }
+
+                    // Also check if present_medication is an array (populated)
+                    if (meds.length === 0 && Array.isArray(item.present_medication)) {
+                        meds = item.present_medication.map((m: any) => ({
+                            name: m.name || m.label || "N/A",
+                            dose: m.dose || m.dosage || "N/A",
+                            days: m.days || 0,
+                            startDate: m.startDate || m.start_date || "N/A",
+                            endDate: m.endDate || m.end_date || "N/A",
+                        }));
+                    }
+
+                    return {
+                        id: item._id,
+                        date: new Date(item.createdAt).toLocaleDateString(),
+                        title: item.details && !item.details.startsWith("{") ? item.details : (item.action === "add" ? "Patient Added" : "Profile Updated"),
+                        hospital: item.address || "Unknown Hospital",
+                        doctor: item.caregiver_name || "Assigned Doctor",
+                        desc: item.medical_conditions?.name || "No description available",
+                        color: getColorByGender(item.gender),
+                        medications: meds,
+                    };
+                });
 
                 setHistory(mappedData);
             }
@@ -237,7 +279,7 @@ const PatientHistory = () => {
         return (
             <View className="px-2 mt-[22px]">
                 <View className="flex-row">
-                    <Text className="text-[12px] mr-[11px] mt-[2px]">{item.date}</Text>
+                    <Text className="text-[12px] mr-[11px] mt-[2px] font-semibold w-[55px]">{item.date}</Text>
 
                     <View className="items-center mr-[11px] self-stretch">
                         {!isFirst && <View style={styles.lineTop} />}
@@ -253,22 +295,43 @@ const PatientHistory = () => {
                     </View>
 
                     <View className="flex-1">
-                        <Text className="text-[12px] font-semibold">{item.title}</Text>
+                        {/* <Text className="text-[12px] font-semibold">{item.title}</Text> */}
+                        <Text className="text-[12px] font-semibold">{item.desc}</Text>
 
                         <View
                             className="bg-white rounded-lg p-[11px] border-l-[2px] mt-[10px]"
                             style={{ borderLeftColor: item.color, elevation: 3 }}
                         >
-                            <Text className="text-[10px] font-medium mb-[2px]">{item.hospital}</Text>
-                            <Text className="text-[10px] text-[#BBBABA] font-medium mb-[6px]">{item.doctor}</Text>
-                            <Text className="text-[9px] text-[#010101] font-light mb-[15px]">{item.desc}</Text>
+                            <Text className="text-[11px] font-medium mb-[2px]">Dr. {item.doctor}</Text>
+                            <Text className="text-[10px] text-[#BBBABA] font-medium mb-[6px]">{item.hospital}</Text>
+                            <View className="mt-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-3">
+                                <View className="mb-2">
+                                    <Text className="text-[11px] font-bold text-[#1E293B]">Medications</Text>
+                                </View>
 
-                            <Pressable
+                                {item.medications && item.medications.length > 0 ? (
+                                    item.medications.map((med: any, idx: number) => (
+                                        <View key={idx} className={`${idx !== 0 ? 'mt-2 pt-2 border-t border-[#EDF2F7]' : ''}`}>
+                                            <Text className="text-[10px] text-[#1E293B] font-semibold mb-1">{med.name}</Text>
+                                            <View className="flex-row flex-wrap">
+                                                <Text className="text-[9px] text-[#64748B] w-1/2 mb-0.5">• Dose: {med.dose}</Text>
+                                                <Text className="text-[9px] text-[#64748B] w-1/2 mb-0.5">• Days: {med.days}</Text>
+                                                <Text className="text-[9px] text-[#64748B] w-1/2">• Start: {med.startDate}</Text>
+                                                <Text className="text-[9px] text-[#64748B] w-1/2">• End: {med.endDate}</Text>
+                                            </View>
+                                        </View>
+                                    ))
+                                ) : (
+                                    <Text className="text-[10px] text-[#64748B] font-light italic">{item.desc}</Text>
+                                )}
+                            </View>
+
+                            {/* <Pressable
                                 className="ml-auto w-[52px] px-[7px] py-[4px] bg-[#FAFAFA] items-center rounded-[5px] active:opacity-70"
                                 style={{ elevation: 3 }}
                             >
                                 <Text className="text-[8px] font-normal text-[#ACACAC]">View more</Text>
-                            </Pressable>
+                            </Pressable> */}
                         </View>
                     </View>
                 </View>

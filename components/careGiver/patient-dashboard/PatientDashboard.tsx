@@ -30,6 +30,7 @@ export default function PatientDashboard() {
                 console.log("Patient Detail: ", response);
                 if (response?.success && response?.data) {
                     const patient = response.data;
+                    console.log("RAW patient.details =>", patient.details);
                     setPatientData(patient);
 
                     let meds: SelectedItem[] = [];
@@ -37,6 +38,8 @@ export default function PatientDashboard() {
                     if (patient.details) {
                         try {
                             const parsedDetails = JSON.parse(patient.details);
+                            console.log("PARSED DETAILS =>", parsedDetails);
+console.log("MEDICATIONS FROM BACKEND =>", parsedDetails.medications);
                             if (parsedDetails.medications && Array.isArray(parsedDetails.medications)) {
                                 meds = parsedDetails.medications.map((m: any) => ({
                                     label: m.label || m.name || "",
@@ -82,7 +85,7 @@ export default function PatientDashboard() {
     const sections = [
         // { key: "header", component: <PatientDashboardHeader patient={patientData} /> },
         { key: "chart", component: <Chart /> },
-        { key: "healthDetails", component: <HealthDetails /> },
+        { key: "healthDetails", component: <HealthDetails medicalCondition={patientData?.medical_conditions} /> },
         {
             key: "patientHealthInfo", component: (
                 <PatientHealthInfo

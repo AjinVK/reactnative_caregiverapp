@@ -1,5 +1,12 @@
 import { Control, Controller, useWatch } from "react-hook-form";
-import { Animated, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+    Animated,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 type FloatingInputProps = {
@@ -47,58 +54,67 @@ const FloatingInput = ({
             control={control}
             name={name}
             render={({ field: { value, onChange, onBlur }, fieldState: { error } }) => (
-                <View className="w-full mb-[25px]">
-                    <Animated.Text
-                        style={[
-                            styles.floatingLabel,
-                            labelStyle,
-                            {
-                                transform: [
-                                    {
-                                        translateY: animated.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [12, -12],
-                                        }),
-                                    },
-                                    {
-                                        scale: animated.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [1, 0.8],
-                                        }),
-                                    },
-                                ],
-                            },
-                        ]}
-                    >
-                        {label}
-                    </Animated.Text>
+                <View className="w-full mb-[15px]">
+                    <View style={{ position: "relative" }}>
+                        <Animated.Text
+                            pointerEvents="none"
+                            style={[
+                                styles.floatingLabel,
+                                labelStyle,
+                                {
+                                    transform: [
+                                        {
+                                            translateY: animated.interpolate({
+                                                inputRange: [0, 1],
+                                                outputRange: [18, -10],
+                                            }),
+                                        },
+                                        {
+                                            scale: animated.interpolate({
+                                                inputRange: [0, 1],
+                                                outputRange: [1, 0.85],
+                                            }),
+                                        },
+                                    ],
+                                },
+                            ]}
+                        >
+                            {label}
+                        </Animated.Text>
 
-                    <TextInput
-                        className="-mb-[5px] text-[17px]"
-                        value={value}
-                        onChangeText={onChange}
-                        secureTextEntry={secureTextEntry}
-                        keyboardType={keyboardType as any}
-                        autoCapitalize={autoCapitalize}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => {
-                            setIsFocused(false);
-                            onBlur();
-                        }}
-                    />
+                        <View
+                            className="flex-row items-center border-b-[1px]"
+                            style={{
+                                borderBottomColor: error ? "#EF4444" : "#000",
+                                minHeight: 45,
+                            }}
+                        >
+                            <TextInput
+                                style={[
+                                    styles.input,
+                                    Platform.OS === "web" && ({ outlineStyle: "none" } as any),
+                                ]}
+                                value={value}
+                                onChangeText={onChange}
+                                secureTextEntry={secureTextEntry}
+                                keyboardType={keyboardType as any}
+                                autoCapitalize={autoCapitalize}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => {
+                                    setIsFocused(false);
+                                    onBlur();
+                                }}
+                            />
 
-                    {icon && (
-                        <View style={[styles.rightIcon, iconStyle]}>
-                            {icon}
+                            {icon && (
+                                <View style={[styles.iconContainer, iconStyle]}>
+                                    {icon}
+                                </View>
+                            )}
                         </View>
-                    )}
+                    </View>
 
-                    <View
-                        className="h-[1px]"
-                        style={{ backgroundColor: error ? "#EF4444" : "#000" }}
-                    />
-
-                    <View style={{ height: 12 }}>
+                    <View style={{ height: 18, marginTop: 4 }}>
                         <Text className="text-red-500 text-[10px]">
                             {error?.message ?? " "}
                         </Text>
@@ -117,10 +133,21 @@ const styles = StyleSheet.create({
         left: 0,
         fontSize: 16,
         color: "#444",
+        zIndex: 1,
     },
-    rightIcon: {
-        position: "absolute",
-        right: 0,
-        marginTop: 7,
+    input: {
+        flex: 1,
+        fontSize: 17,
+        paddingTop: 18,
+        paddingBottom: 4,
+        paddingHorizontal: 0,
+        color: "#000",
+        borderWidth: 0,
+        backgroundColor: "transparent",
+    },
+    iconContainer: {
+        paddingTop: 14,
+        paddingLeft: 8,
     },
 });
+

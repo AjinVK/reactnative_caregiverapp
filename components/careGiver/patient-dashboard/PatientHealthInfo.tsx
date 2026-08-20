@@ -23,6 +23,7 @@ export default function PatientHealthInfo({
     weight,
     medications = [],
 }: PatientHealthInfoProps) {
+    console.log("TABLE RECEIVED MEDICATIONS =>", medications);
     return (
         <View className="px-4 mb-[20px]">
             <Text className="text-[20px] font-semibold mb-[15px]">Patient health info </Text>
@@ -72,7 +73,9 @@ export default function PatientHealthInfo({
                             <View className="w-[45px] h-[41px] bg-[#E5E8FF] rounded-[8px] items-center justify-center">
                                 <Image
                                     source={require("@/assets/patientDashboard/balance-scale-left.png")}
-                                    resizeMode="contain" className="w-[20px]" tintColor={"#101D84"} />
+                                    resizeMode="contain" 
+                                    style={{ width: 24, height: 24, tintColor: "#101D84" }} 
+                                />
                             </View>
 
                             <Text className="text-[17px] text-[#0C1662] font-semibold ml-[15px]">Weight</Text>

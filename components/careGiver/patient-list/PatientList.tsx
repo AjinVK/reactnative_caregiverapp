@@ -119,7 +119,7 @@ export default function PatientList() {
             <View className="flex-row items-center px-4">
                 <Pressable onPress={handleBack}
                     className="w-[33px] h-[33px] bg-[#fff] rounded-full items-center justify-center mt-[10px] mb-[14px]">
-                    <IconSymbol name={"arrow-left.fill"} color={""} />
+                    <IconSymbol name={"arrow-left.fill"} color={"black"} />
                 </Pressable>
                 <View className="ml-[98px]">
                     <Text className="text-[20px] font-semibold">Patient’s list</Text>

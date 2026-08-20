@@ -19,7 +19,13 @@ export default function PatientCard({ item, onPress }: PatientCardProps) {
             <Pressable
                 onPress={() => onPress?.(item)}
                 className="h-[85px] bg-white rounded-2xl flex-row items-center mb-3 active:opacity-70"
-                style={{ elevation: 3 }}
+                style={{ 
+                    elevation: 3,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 3,
+                }}
             >
                 <Image
                     source={{ uri: item.image }}

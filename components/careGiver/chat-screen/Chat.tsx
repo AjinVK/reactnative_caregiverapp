@@ -40,12 +40,20 @@ export default function Chat() {
     const flatListRef = useRef<FlatList>(null);
 
     const { patientId } = useLocalSearchParams<{ patientId: string }>();
-    const typingTimeout = useRef<number | null>(null);
+    const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-    const onContactPress = () => {
-        if (patient?.phone) Linking.openURL(`tel:${patient.phone}`);
+    const onContactPress = async () => {
+        // if (patient?.phone) Linking.openURL(`tel:${patient.phone}`);
+        const url = `tel:${patient.phone}`;
+        try {
+            const supported = await Linking.canOpenURL(url);
+            if (supported) await Linking.openURL(url);
+            else console.log("Dialer not available (probably simulator)");
+        } catch (error) {
+            console.log("Cannot open dialer in simulator");
+        }
     };
 
     useEffect(() => {
@@ -247,14 +255,16 @@ export default function Chat() {
                 <View style={{ marginBottom: keyboardHeight }}>
 
                     <View className="px-4 py-2 bg-white">
-                        <View className="flex-row items-center bg-[#F6F6F6] rounded-full px-3 py-2">
+                        <View className="flex-row items-end bg-[#F6F6F6] rounded-full px-3 py-2">
 
-                            <Entypo
-                                name="plus"
-                                size={22}
-                                color="#777777"
-                                onPress={() => setShowAttach(true)}
-                            />
+                            <View className="pb-2">
+                                <Entypo
+                                    name="plus"
+                                    size={22}
+                                    color="#777777"
+                                    onPress={() => setShowAttach(true)}
+                                />
+                            </View>
 
                             <Animated.View style={{ height: inputHeight, flex: 1 }}>
                                 <TextInput
@@ -262,9 +272,9 @@ export default function Chat() {
                                     onChangeText={handleTyping}
                                     placeholder="Message"
                                     multiline
-                                    textAlignVertical="top"
                                     placeholderTextColor="#8E8E8E"
                                     className="text-[16px] mx-3"
+                                    style={{ paddingVertical: 8 }}
                                     onContentSizeChange={(e) => {
                                         const height = Math.min(
                                             120,
@@ -280,7 +290,7 @@ export default function Chat() {
                                 />
                             </Animated.View>
 
-                            <Pressable onPress={sendMessage}>
+                            <Pressable onPress={sendMessage} className="pb-1">
                                 <FontAwesome6 name="telegram" size={34} color="#2873B5" />
                             </Pressable>
 

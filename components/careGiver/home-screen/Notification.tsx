@@ -5,22 +5,35 @@ export default function Notification() {
     return (
         <View className="px-4">
             <View
-                className="w-full bg-[#fff] rounded-xl mb-[20px] justify-center overflow-hidden"
-                style={{ elevation: 4 }}
+                className="w-full bg-[#fff] rounded-xl mb-[20px] justify-center"
+                style={{ 
+                    elevation: 4,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                }}
             >
-                <View className="flex-row items-center justify-between">
+                <View className="overflow-hidden rounded-xl">
+                    <View className="flex-row items-center justify-between">
                     <View className="flex-1 ml-5">
-                        <Text className="text-[18px] font-bold text-[##032D6F] mb-1.5">
+                        <Text className="text-[18px] font-bold text-[#032D6F] mb-1.5">
                             Get the best medical services
                         </Text>
 
-                        <Text className="text-[10px] font-semibold text-[##72A7DF] mb-5">
+                        <Text className="text-[10px] font-semibold text-[#72A7DF] mb-5">
                             We provide best quality medical service without further cost
                         </Text>
 
                         <Pressable
                             className="w-[75px] py-1.5 rounded-lg items-center active:opacity-70 bg-white"
-                            style={{ elevation: 2 }}
+                            style={{ 
+                                elevation: 2,
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 1 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 2,
+                            }}
                         >
                             <Text className="text-[11px] font-normal">Read more</Text>
                         </Pressable>
@@ -49,6 +62,7 @@ export default function Notification() {
                         </View>
                     </View>
 
+                    </View>
                 </View>
             </View>
         </View>

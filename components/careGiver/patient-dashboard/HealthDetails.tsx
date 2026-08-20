@@ -54,15 +54,16 @@
 
 
 import React, { useRef } from "react";
-import { Text, Animated } from "react-native";
+import { Text, Animated, Image } from "react-native";
 import { View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TabletIcon from "@/assets/patientDashboard/tablet.svg";
 import AsthumaIcon from "@/assets/patientDashboard/asthuma.svg";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const CARD_SIZE = 70;
+const CARD_WIDTH = 90;
 const GAP = 16;
-const SNAP_INTERVAL = CARD_SIZE + GAP;
+const SNAP_INTERVAL = CARD_WIDTH + GAP;
 
 const MEDICATIONS = [
     { label: "Diabetes", Icon: TabletIcon },
@@ -70,8 +71,35 @@ const MEDICATIONS = [
     { label: "Asthuma", Icon: AsthumaIcon },
 ];
 
-export default function HealthDetails() {
+interface HealthDetailsProps {
+    medicalCondition?: {
+        _id: string;
+        name: string;
+    };
+}
+
+export default function HealthDetails({ medicalCondition }: HealthDetailsProps) {
     const scrollX = useRef(new Animated.Value(0)).current;
+
+    const getIcon = (name: string) => {
+        if (name === "Hypertension") {
+            return () => <MaterialCommunityIcons name="heart-plus" size={24} color="#186085" />;
+        }
+        if (name === "Heart Disease") {
+            return () => <FontAwesome name="heartbeat" size={24} color="#186085" />;
+        }
+        if (name === "Thyroid Disorder") {
+            return () => <Image source={require("@/assets/patientDashboard/thyroid.png")} style={{ width: 24, height: 24, tintColor: "#186085" }} accessibilityLabel="thyroid"/>;
+        }
+        return AsthumaIcon;
+    };
+
+    const conditions = medicalCondition ? [
+        { 
+            label: medicalCondition.name, 
+            Icon: getIcon(medicalCondition.name)
+        }
+    ] : MEDICATIONS;
 
     return (
         <View className="px-4 mb-[20px]">
@@ -82,13 +110,19 @@ export default function HealthDetails() {
             <View className="bg-white rounded-[7px] px-[18px] pt-[16px] shadow-md">
                 <View className="flex-row justify-between">
                     <View
-                        className="w-[82px] bg-white rounded-[11px] border border-[#BCBCBC] items-center px-[11px] py-[8px] mb-[14px]"
-                        style={{ elevation: 3 }}
+                        className="w-auto px-3 bg-white rounded-[11px] border border-[#BCBCBC] items-center py-2 mb-[14px]"
+                        style={{ 
+                            elevation: 3,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 1 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 2,
+                        }}
                     >
-                        <Text className="text-[11px] font-medium">Medication</Text>
+                        <Text className="text-[11px] font-medium">Medical condition</Text>
                     </View>
 
-                    <View className="w-[26px] h-[26px] border-[0.5px] border-black rounded-full items-center justify-center top-1">
+                    <View className="w-7 h-7 border-[0.5px] border-black rounded-full items-center justify-center top-1">
                         <MaterialCommunityIcons
                             name="dots-vertical"
                             size={16}
@@ -114,7 +148,7 @@ export default function HealthDetails() {
                             { useNativeDriver: false }
                         )}
                     >
-                        {MEDICATIONS.map((item, index) => (
+                        {conditions.map((item, index) => (
                             <MedicationCard
                                 key={index}
                                 label={item.label}
@@ -124,7 +158,7 @@ export default function HealthDetails() {
                     </Animated.ScrollView>
                 </View>
 
-                <View className="flex-row justify-center gap-2 pb-[16px]">
+                {/* <View className="flex-row justify-center gap-2 pb-[16px]">
                     {MEDICATIONS.map((_, index) => {
                         const inputRange = [
                             (index - 1) * SNAP_INTERVAL,
@@ -157,7 +191,7 @@ export default function HealthDetails() {
                             />
                         );
                     })}
-                </View>
+                </View> */}
             </View>
         </View>
     );
@@ -172,11 +206,17 @@ function MedicationCard({
 }) {
     return (
         <View
-            className="w-[70px] h-[70px] gap-2 rounded-[8px] bg-[#E5F6FF] items-center justify-center"
-            style={{ elevation: 3 }}
+            className="w-[90px] px-3 py-4 gap-2 rounded-[8px] bg-[#E5F6FF] items-center justify-center"
+            style={{
+                elevation: 3,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 2,
+            }}
         >
             <Icon />
-            <Text className="text-[#186085] text-[12px] font-medium">
+            <Text className="text-[#186085] text-[12px] font-medium text-center" numberOfLines={1} ellipsizeMode="clip">
                 {label}
             </Text>
         </View>

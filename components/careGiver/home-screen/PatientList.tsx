@@ -8,7 +8,13 @@ export default function PatientList() {
             <Pressable
                 className="w-full h-[42px] bg-[#fff] rounded-lg flex-row items-center justify-between active:opacity-70"
                 onPress={() => router.push("/screen/PatientListPage")}
-                style={{ elevation: 2 }}
+                style={{ 
+                    elevation: 2,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
+                }}
             >
                 <Text className="text-[17px] font-semibold ml-[21px]">Patient’s list</Text>
                 <View className="mr-[12px]">

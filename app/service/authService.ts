@@ -2,7 +2,7 @@ import { fetchAPI } from "../api/apiClient";
 import API_ENDPOINTS from "../api/apiEndPoints";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = 'token';
 
 interface LoginPayload {
     userName: string;
@@ -25,7 +25,8 @@ interface AuthResponse {
       data: {
         token?: string;
         user: {
-            _id: string;
+            user_id: string;
+            patient_id: string | null;
             first_name: string;
             email: string;
         };
@@ -42,7 +43,9 @@ const AuthService = {
         const loginPayload = {
             first_name: firstName,
             user_name: userName,
-            password: payload.password
+            password: payload.password,
+            role: "caregiver",
+            app_type: "caregiver",
         };
 
         const response = await fetchAPI<AuthResponse>(API_ENDPOINTS.LOGIN, {
@@ -50,21 +53,25 @@ const AuthService = {
             body: loginPayload,
         });
 
-        // if (response?.token) {
-        //     await AsyncStorage.setItem(TOKEN_KEY, response.token);
-        // }
-
-        console.log("LOGIN response:", response);
+        console.log("CAREGIVER LOGIN response:", JSON.stringify(response, null, 2));
 
         const token = response?.data?.token;
-        const userId = response?.data?.user?._id;
+        const userId = response?.data?.user?.user_id;
 
         if (token && userId) {
             await AsyncStorage.setItem(TOKEN_KEY, token);
             await AsyncStorage.setItem("user_id", userId);
+            await AsyncStorage.setItem("user_role", "caregiver");
 
+            if (response?.data?.user?.patient_id) {
+                await AsyncStorage.setItem("patient_id", response.data.user.patient_id);
+                console.log("✅ Patient ID stored:", response.data.user.patient_id);
+            }
+
+            console.log("✅ Caregiver login success");
             console.log("✅ Token stored:", token);
             console.log("✅ User ID stored:", userId);
+            console.log("✅ User Role stored: caregiver");
         } else {
             console.error("❌ Token or User ID missing in login response");
         }
@@ -86,7 +93,9 @@ const AuthService = {
             last_name: payload.lastName,
             email: payload.email,
             password: payload.password,
-            confirm_password: payload.confirmPassword
+            confirm_password: payload.confirmPassword,
+            role: "caregiver",
+            app_type: "caregiver",
         };
 
         const response = await fetchAPI<AuthResponse>(API_ENDPOINTS.REGISTER, {
@@ -100,6 +109,11 @@ const AuthService = {
 
     async logout() {
         await AsyncStorage.removeItem(TOKEN_KEY);
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user_id");
+        await AsyncStorage.removeItem("userId");
+        await AsyncStorage.removeItem("patient_id");
+        await AsyncStorage.removeItem("user_role");
     },
 
     async getToken(): Promise<string | null> {

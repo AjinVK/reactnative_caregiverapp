@@ -1,16 +1,16 @@
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { router, useLocalSearchParams } from "expo-router";
-import { FlatList, Image, LayoutAnimation, Linking, Platform, Pressable, ScrollView, Text, UIManager, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import WeightIcon from "@/assets/careGiver/weight.svg";
-import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
-import { Fontisto, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { WebView } from "react-native-webview";
-import { Modal, ActivityIndicator } from "react-native";
 import PatientFormService, { PatientPayload } from "@/app/service/patientFormService";
+import WeightIcon from "@/assets/careGiver/weight.svg";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Fontisto, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Image, LayoutAnimation, Linking, Modal, Platform, Pressable, ScrollView, Text, UIManager, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { WebView } from "react-native-webview";
 
 export default function PatientProfile() {
+    const insets = useSafeAreaInsets();
 
     const { id } = useLocalSearchParams<{ id?: string }>();
     const [patientData, setPatientData] = useState<PatientPayload | null>(null);
@@ -21,9 +21,20 @@ export default function PatientProfile() {
 
     const phoneStr = patientData?.phone;
 
-    const handleContactPress = () => {
-        if (!phoneStr) return;
-        Linking.openURL(`tel:${phoneStr}`);
+    const handleContactPress = async () => {
+        const url = `tel:${phoneStr}`;
+        try {
+            const supported = await Linking.canOpenURL(url);
+            if(supported) {
+                await Linking.openURL(url);
+            } else {
+                console.log("Dialer not available (probably simulator)");
+            }
+        } catch (error) {
+            console.log("cannot open dialer in simulator");
+        }
+        // if (!phoneStr) return;
+        // Linking.openURL(`tel:${phoneStr}`);
     };
 
     const handleMessage = () => {
@@ -106,7 +117,7 @@ export default function PatientProfile() {
         {
             label: "Blood",
             value: patientData?.bloodGroup
-                ? patientData.bloodGroup.name
+                ? `${patientData.bloodGroup.name}ve`
                 : "--",
             icon: <Fontisto name="blood-drop" size={14} color="#E93A3A" />,
         },
@@ -167,7 +178,7 @@ export default function PatientProfile() {
                             className="w-[33px] h-[33px] bg-white items-center justify-center rounded-full active:opacity-70"
                             onPress={router.back}
                         >
-                            <IconSymbol name={"arrow-left.fill"} color={""} />
+                            <IconSymbol name={"arrow-left.fill"} color={"black"} />
                         </Pressable>
                     </View>
                 </SafeAreaView>
@@ -184,7 +195,12 @@ export default function PatientProfile() {
 
                     <View className="px-4 flex-row items-end">
                         <View className="w-[125px] h-[125px] items-center justify-center bg-white" style={{
-                            elevation: 7, borderRadius: 19
+                            elevation: 7,
+                            borderRadius: 19,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 3 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 5,
                         }}>
                             <Image
                                 source={{ uri: imageUri }}
@@ -218,36 +234,36 @@ export default function PatientProfile() {
                         ))}
                     </View>
 
-                    <View className="px-4 mt-[20px] flex-row justify-between">
-                        <Pressable onPress={handleContactPress} className="active:opacity-70">
-                            <LinearGradient
-                                colors={["#CADBFF", "#729AF0"]}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 0, y: 1 }}
-                                className="flex-row w-[172px] h-[36px]"
-                                style={{ borderRadius: 8 }}
-                            >
-                                <View className="flex-row items-center ml-[15px] gap-7">
-                                    <IconSymbol name={"phone-call.outline"} color={""} size={20} />
-                                    <Text className="text-[14px] font-normal">Contact</Text>
-                                </View>
-                            </LinearGradient>
-                        </Pressable>
+                    <View className="px-4 mt-[20px] flex-row gap-4">
+                        <View style={{ flex: 1 }}>
+                            <Pressable onPress={handleContactPress} className="active:opacity-70">
+                                <LinearGradient
+                                    colors={["#CADBFF", "#729AF0"]}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    className="flex-row items-center justify-center"
+                                    style={{ borderRadius: 8, height: 40, overflow: "hidden", width: "100%" }}
+                                >
+                                    <IconSymbol name={"phone-call.outline"} color={"black"} size={20} />
+                                    <Text className="text-[14px] font-medium ml-2">Contact</Text>
+                                </LinearGradient>
+                            </Pressable>
+                        </View>
 
-                        <Pressable onPress={handleMessage} className="active:opacity-70">
-                            <LinearGradient
-                                colors={["#CADBFF", "#729AF0"]}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 0, y: 1 }}
-                                className="flex-row w-[172px] h-[36px]"
-                                style={{ borderRadius: 8 }}
-                            >
-                                <View className="flex-row items-center ml-[15px] gap-7">
-                                    <IconSymbol name={"message.outline"} color={""} size={20} />
-                                    <Text className="text-[14px] font-normal">Message</Text>
-                                </View>
-                            </LinearGradient>
-                        </Pressable>
+                        <View style={{ flex: 1 }}>
+                            <Pressable onPress={handleMessage} className="active:opacity-70">
+                                <LinearGradient
+                                    colors={["#CADBFF", "#729AF0"]}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    className="flex-row items-center justify-center"
+                                    style={{ borderRadius: 8, height: 40, overflow: "hidden", width: "100%" }}
+                                >
+                                    <IconSymbol name={"message.outline"} color={"black"} size={20} />
+                                    <Text className="text-[14px] font-medium ml-2">Message</Text>
+                                </LinearGradient>
+                            </Pressable>
+                        </View>
                     </View>
 
                     <View className="px-4">
@@ -349,8 +365,8 @@ export default function PatientProfile() {
             </View>
             {/* </SafeAreaView> */}
 
-            <Modal visible={visible} animationType="slide">
-                <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+            <Modal visible={visible} animationType="slide" onRequestClose={() => setVisible(false)}>
+                <View style={{ flex: 1, backgroundColor: "#fff", paddingTop: insets.top, paddingBottom: insets.bottom }}>
 
                     <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
                         <Text className="text-[16px] font-bold">Report Preview</Text>
@@ -380,7 +396,7 @@ export default function PatientProfile() {
                         />
                     )}
 
-                </SafeAreaView>
+                </View>
             </Modal>
         </>
     );

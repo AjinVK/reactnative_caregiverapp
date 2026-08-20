@@ -4,6 +4,9 @@ import API_ENDPOINTS from "../api/apiEndPoints";
 
 export interface PatientHistoryPayload {
     caregiver_id: string;
+    caregiver_name?: string;
+    patient_id: string;
+    action: string;
     name: string;
     date_of_birth?: string | null;
     age: number;
@@ -15,10 +18,8 @@ export interface PatientHistoryPayload {
     height?: number;
     weight?: number;
     details?: string;
-    medical_conditions?: string;
-    present_medication?: string;
-    registrationDate?: string;
-    past_surgeries?: string;
+    medical_conditions: string;
+    present_medication: string;
 }
 
 export interface PatientHistoryResponse {
