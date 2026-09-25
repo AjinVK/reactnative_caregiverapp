@@ -206,7 +206,7 @@ const PatientHistory = () => {
     const fetchPatientHistory = async (patientId: string) => {
         try {
             const response = await PatientHistoryService.getPatientHistoryById(patientId);
-            console.log("API response:", response);
+            // console.log("API response:", response);
 
             if (response.success && response.data) {
                 const mappedData: TimelineItem[] = response.data.map((item: any) => {

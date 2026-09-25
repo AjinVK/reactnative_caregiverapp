@@ -35,7 +35,7 @@ const PatientHistoryService = {
         if (!token) throw new Error("Authentication token not found. Please login again.");
 
         const url = `${API_ENDPOINTS.GET_PATIENTS_HISTORY_BY_ID}/${id}`;
-        console.log("Fetching patient history URL:", url);
+        // console.log("Fetching patient history URL:", url);
 
         const response = await fetchAPI<PatientHistoryResponse>(url, {
             method: "GET",

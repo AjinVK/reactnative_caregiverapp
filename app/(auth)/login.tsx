@@ -28,7 +28,7 @@ const LoginScreen = () => {
     const onSubmit = async (data: any) => {
         try {
             const response: any = await AuthService.login(data);
-            console.log("response:", response);
+            // console.log("response:", response);
 
             if (response?.statusCode == apiResponseMessages.apiStatuscode.success) {
 
@@ -41,8 +41,8 @@ const LoginScreen = () => {
                     userRole = 'caregiver';
                 }
 
-                console.log("User ID:", userId);
-                console.log("User Role:", userRole);
+                // console.log("User ID:", userId);
+                // console.log("User Role:", userRole);
 
                 // Role Validation for Caregiver Login Screen
                 if (userRole !== "caregiver") {
@@ -62,9 +62,9 @@ const LoginScreen = () => {
 
                 if (token) {
                     await AsyncStorage.setItem("token", token);
-                    console.log("✅ Token stored successfully:", token);
+                    // console.log("✅ Token stored successfully:", token);
                 } else {
-                    console.warn("⚠️ No token found in response — skipping save");
+                    // console.warn("⚠️ No token found in response — skipping save");
                 }
                 Toast.show({
                     type: apiResponseMessages.tostTypes.sucess,
@@ -96,9 +96,9 @@ const LoginScreen = () => {
             displayMessage = parsed.message || parsed.error || displayMessage;
           }
         } catch (e) { }
-        console.log("Error:", displayMessage);
+        // console.log("Error:", displayMessage);
       } else {
-        console.log("Unknown error:", JSON.stringify(error, null, 2));
+        // console.log("Unknown error:", JSON.stringify(error, null, 2));
       }
       Toast.show({
         type: apiResponseMessages.tostTypes.error,

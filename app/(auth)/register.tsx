@@ -31,12 +31,12 @@ const SignUpScreen = () => {
     });
 
     const onSubmit = async (data: any) => {
-        console.log("onSubmit triggered", data);
-        console.log("Register endpoint:", BASE_URL + "/auth/register");
+        // console.log("onSubmit triggered", data);
+        // console.log("Register endpoint:", BASE_URL + "/auth/register");
 
         try {
             const response: any = await AuthService.register(data);
-            console.log("response received:", response);
+            // console.log("response received:", response);
 
             if (response?.statusCode == apiResponseMessages.apiStatuscode.created) {
                 Toast.show({
@@ -69,9 +69,9 @@ const SignUpScreen = () => {
                     displayMessage = parsed.message || parsed.error || displayMessage;
                   }
                 } catch (e) { }
-                console.log("Error:", displayMessage);
+                // console.log("Error:", displayMessage);
               } else {
-                console.log("Unknown error:", JSON.stringify(error, null, 2));
+                // console.log("Unknown error:", JSON.stringify(error, null, 2));
               }
               Toast.show({
                 type: apiResponseMessages.tostTypes.error,

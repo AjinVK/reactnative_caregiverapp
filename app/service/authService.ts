@@ -35,7 +35,7 @@ interface AuthResponse {
 
 const AuthService = {
     async login(payload: LoginPayload): Promise<AuthResponse> {
-        console.log("Sending LOGIN request:", payload);
+        // console.log("Sending LOGIN request:", payload);
 
         const userName = payload.userName.trim();
         const firstName = userName.split(' ')[0];
@@ -53,7 +53,7 @@ const AuthService = {
             body: loginPayload,
         });
 
-        console.log("CAREGIVER LOGIN response:", JSON.stringify(response, null, 2));
+        // console.log("CAREGIVER LOGIN response:", JSON.stringify(response, null, 2));
 
         const token = response?.data?.token;
         const userId = response?.data?.user?.user_id;
@@ -65,15 +65,15 @@ const AuthService = {
 
             if (response?.data?.user?.patient_id) {
                 await AsyncStorage.setItem("patient_id", response.data.user.patient_id);
-                console.log("✅ Patient ID stored:", response.data.user.patient_id);
+                // console.log("✅ Patient ID stored:", response.data.user.patient_id);
             }
 
-            console.log("✅ Caregiver login success");
-            console.log("✅ Token stored:", token);
-            console.log("✅ User ID stored:", userId);
-            console.log("✅ User Role stored: caregiver");
+            // console.log("✅ Caregiver login success");
+            // console.log("✅ Token stored:", token);
+            // console.log("✅ User ID stored:", userId);
+            // console.log("✅ User Role stored: caregiver");
         } else {
-            console.error("❌ Token or User ID missing in login response");
+            // console.error("❌ Token or User ID missing in login response");
         }
 
         return response;
@@ -81,12 +81,12 @@ const AuthService = {
 
     async register(payload: RegisterPayload): Promise<AuthResponse> {
 
-        console.log("Sending REGISTER request:", payload);
-        console.log("Register endpoint:", API_ENDPOINTS.REGISTER);
+        // console.log("Sending REGISTER request:", payload);
+        // console.log("Register endpoint:", API_ENDPOINTS.REGISTER);
 
-        console.log("🚀 [AuthService] REGISTER called");
-        console.log("📦 Payload being sent:", JSON.stringify(payload, null, 2));
-        console.log("🌍 Endpoint:", API_ENDPOINTS.REGISTER);
+        // console.log("🚀 [AuthService] REGISTER called");
+        // console.log("📦 Payload being sent:", JSON.stringify(payload, null, 2));
+        // console.log("🌍 Endpoint:", API_ENDPOINTS.REGISTER);
 
         const transformedPayload = {
             first_name: payload.firstName,
@@ -103,7 +103,7 @@ const AuthService = {
             body: transformedPayload,
         });
 
-        console.log("✅ [AuthService] REGISTER response:", JSON.stringify(response, null, 2));
+        // console.log("✅ [AuthService] REGISTER response:", JSON.stringify(response, null, 2));
         return response;
     },
 
