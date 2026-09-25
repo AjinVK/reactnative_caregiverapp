@@ -213,7 +213,7 @@ export default function Chat() {
                             source={{
                                 uri:
                                     patient?.image ??
-                                    "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                                    "https://cdn-icons-png.flaticon.com/512/861/861503.png",
                             }}
                             style={{ backgroundColor: "white" }}
                         />
